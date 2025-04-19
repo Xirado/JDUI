@@ -1,11 +1,13 @@
 package at.xirado.jdui.view.definition.function
 
 import at.xirado.jdui.component.ViewContainer
+import at.xirado.jdui.view.ViewDSL
 import at.xirado.jdui.view.definition.ViewDefinition
 
 internal typealias ViewFunction = suspend ViewDefinitionFunction.() -> Unit
 internal typealias ComposeFunction = suspend ViewContainer.() -> Unit
 
+@ViewDSL
 class ViewDefinitionFunction(
     private val viewFunction: ViewFunction
 ) : ViewDefinition() {

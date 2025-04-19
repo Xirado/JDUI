@@ -5,12 +5,12 @@ import net.dv8tion.jda.api.components.Component as JDAComponent
 abstract class ComponentContainer<T, C>: ParentComponent<T, C>() {
     internal val container = mutableListOf<Component<out C>>()
 
-    internal fun appendComponent(component: Component<out C>) {
+    fun append(component: Component<out C>) {
         container.add(component)
     }
 
     operator fun <U: Component<out C>> U.unaryPlus() {
-        container.add(this)
+        this@ComponentContainer.append(this)
     }
 }
 
