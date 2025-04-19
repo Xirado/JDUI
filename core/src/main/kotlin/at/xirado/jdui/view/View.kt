@@ -17,6 +17,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.javaMethod
+import kotlin.reflect.jvm.jvmName
 
 private val definitionThreadLocal = ThreadLocal<ViewDefinitionClass>()
 
@@ -91,8 +92,7 @@ internal suspend fun <T: View> createClassViewState(
     context: Context?,
 ): ViewState {
     val instance = getInstance(jda)
-    val name = clazz.qualifiedName
-        ?: throw IllegalStateException("Class does not have a name")
+    val name = clazz.jvmName
 
     val sourceData = ClassViewSourceData(name)
     return createViewState(instance, sourceData, context = context)
