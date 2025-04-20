@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.github.freya022:JDA:4b468cdd09")
+    compileOnly("io.github.freya022:JDA:54038f1cec")
 
     api("org.slf4j:slf4j-api:2.0.13")
     api("io.github.oshai:kotlin-logging-jvm:5.1.0")

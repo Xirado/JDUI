@@ -19,7 +19,7 @@ repositories {
 dependencies {
     implementation(project(":core"))
 
-    implementation("io.github.freya022:JDA:4b468cdd09")
+    implementation("io.github.freya022:JDA:54038f1cec")
     implementation("club.minnced:jda-ktx:0.12.0")
 
     implementation("ch.qos.logback:logback-classic:1.5.6")
