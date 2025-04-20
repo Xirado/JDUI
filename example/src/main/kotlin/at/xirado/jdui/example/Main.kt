@@ -7,7 +7,8 @@ import at.xirado.jdui.config.ViewData
 import at.xirado.jdui.config.jdui
 import at.xirado.jdui.context
 import at.xirado.jdui.example.view.*
-import at.xirado.jdui.replyView
+import at.xirado.jdui.view.replyView
+import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.JDABuilder
@@ -109,15 +110,15 @@ object CommandListener : ListenerAdapter() {
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         GlobalScope.launch {
             when (event.name) {
-                "cat" -> event.replyView<CatView>()
-                "counter" -> event.replyView(::counterView)
-                "separator" -> event.replyView(::separatorTestView)
-                "test" -> event.replyView(::componentTest)
-                "multi-menu" -> event.replyView<MultipleMenusView>()
+                "cat" -> event.replyView<CatView>().await()
+                "counter" -> event.replyView(::counterView).await()
+                "separator" -> event.replyView(::separatorTestView).await()
+                "test" -> event.replyView(::componentTest).await()
+                "multi-menu" -> event.replyView<MultipleMenusView>().await()
                 "urban" -> {
                     val term = event.options[0].asString
                     val context = context { +UrbanDictionaryQuery(term) }
-                    event.replyView<UrbanDictionaryView>(context = context)
+                    event.replyView<UrbanDictionaryView>(context = context).await()
                 }
             }
         }

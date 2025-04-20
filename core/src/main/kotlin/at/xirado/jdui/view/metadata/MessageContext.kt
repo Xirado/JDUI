@@ -7,101 +7,103 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.WebhookClient
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.interactions.InteractionHook
+import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.utils.messages.MessageEditData
+import okio.withLock
 import java.lang.ref.WeakReference
-
-internal data class MessageSource(val channelId: Long, val messageId: Long)
-internal data class WebhookMessageSource(val client: WebhookClient<Message>, val messageId: Long)
+import java.util.concurrent.locks.ReentrantLock
 
 private val log = KotlinLogging.logger { }
 
 internal class MessageContext(
     private val jda: WeakReference<JDA>
 ) {
+    private val lock = ReentrantLock()
+
     private var webhook: WebhookMessageSource? = null
     private var interactionHook: InteractionHook? = null
     private var messageSource: MessageSource? = null
 
     fun provideWebhookClient(webhook: WebhookClient<Message>, messageId: Long) {
         require(webhook !is InteractionHook) { "provideWebhookClient() does not work with InteractionHook! Use provideInteractionHook() instead" }
-        this.webhook = WebhookMessageSource(webhook, messageId)
+        lock.withLock { this.webhook = WebhookMessageSource(webhook, messageId) }
     }
 
-    fun provideInteractionHook(hook: InteractionHook) {
+    fun provideInteractionHook(hook: InteractionHook) = lock.withLock {
         interactionHook = hook
+
+        if (hook.hasCallbackResponse() && messageSource == null) {
+            hook.callbackResponse.message?.let {
+                provideMessageSource(it.channelIdLong, it.idLong)
+            }
+        }
     }
 
-    fun provideMessageSource(channelId: Long, messageId: Long) {
+    fun provideMessageSource(channelId: Long, messageId: Long) = lock.withLock {
         messageSource = MessageSource(channelId, messageId)
     }
 
     suspend fun editMessage(messageData: MessageEditData) {
-        val methods = listOf(
-            ::editMessageByInteractionHook,
-            ::editMessageByWebhook,
-            ::editMessageByChannel
-        )
+        val restActions = lock.withLock {
+            editMethods.mapNotNull { it.invoke(this, messageData) }
+        }
 
-        var successful = false
-        var error: Throwable? = null
+        if (restActions.isEmpty())
+            throw IllegalStateException("No available method to edit the message")
 
-        for (method in methods) {
+        val exception = IllegalStateException("Failed to edit message")
+
+        for (action in restActions) {
             try {
-                val success = method.invoke(messageData)
-                if (success) {
-                    successful = true
-                    break
-                }
-            } catch (t: Throwable) {
-                if (error == null)
-                    error = IllegalStateException("Failed to edit message")
-                error.addSuppressed(t)
+                action.await()
+                return
+            } catch (e: Exception) {
+                exception.addSuppressed(e)
             }
         }
 
-        if (successful) {
-            error?.let {
-                log.warn(it) { "Failed to update message with 1 or more methods" }
-            }
-            return
-        }
-
-        error?.let { throw it }
-
-        throw IllegalStateException("No available method to edit the message")
+        throw exception
     }
 
-    private suspend fun editMessageByWebhook(
+    private fun editMessageByInteractionHook(
         messageData: MessageEditData,
-    ): Boolean {
-        val webhook = this.webhook ?: return false
+    ): RestAction<Message>? {
+        val hook = this.interactionHook ?: return null
+        if (hook.isExpired)
+            return null
+
+        return hook.editOriginal(messageData)
+    }
+
+    private fun editMessageByWebhook(
+        messageData: MessageEditData,
+    ): RestAction<Message>? {
+        val webhook = this.webhook ?: return null
         val (client, id) = webhook
 
-        client.editMessageById(id, messageData).await()
-        return true
+        return client.editMessageById(id, messageData)
     }
 
-    private suspend fun editMessageByInteractionHook(
-        messageData: MessageEditData,
-    ): Boolean {
-        val hook = this.interactionHook ?: return false
-        if (hook.isExpired)
-            return false
-
-        hook.editOriginal(messageData).await()
-        return true
-    }
-
-    private suspend fun editMessageByChannel(
+    private fun editMessageByChannel(
         messageData: MessageEditData
-    ): Boolean {
-        val messageSource = this.messageSource ?: return false
-        val jda = this.jda.get() ?: return false
+    ): RestAction<Message>? {
+        val messageSource = this.messageSource ?: return null
+        val jda = this.jda.get() ?: return null
 
         val channel = jda.getChannelById(MessageChannel::class.java, messageSource.channelId)
-            ?: return false
+            ?: return null
 
-        channel.editMessageById(messageSource.messageId, messageData).await()
-        return true
+        return channel.editMessageById(messageSource.messageId, messageData)
+    }
+
+    private companion object {
+        private val editMethods = listOf(
+            MessageContext::editMessageByInteractionHook,
+            MessageContext::editMessageByWebhook,
+            MessageContext::editMessageByChannel
+        )
     }
 }
+
+internal data class MessageSource(val channelId: Long, val messageId: Long)
+internal data class WebhookMessageSource(val client: WebhookClient<Message>, val messageId: Long)

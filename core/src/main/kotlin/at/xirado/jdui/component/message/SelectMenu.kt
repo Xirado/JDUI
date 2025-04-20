@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import kotlin.reflect.KClass
 import kotlin.reflect.typeOf
 import net.dv8tion.jda.api.components.selects.EntitySelectMenu as JDAEntitySelectMenu
 import net.dv8tion.jda.api.components.selects.StringSelectMenu as JDAStringSelectMenu

@@ -1,19 +1,17 @@
 package at.xirado.jdui.handler
 
 import at.xirado.jdui.JDUIListener
-import at.xirado.jdui.component.ComponentIndex
-import at.xirado.jdui.component.StatefulActionComponent
-import at.xirado.jdui.component.buildIndex
 import at.xirado.jdui.component.message.container
 import at.xirado.jdui.component.message.text
 import at.xirado.jdui.crypto.decrypt
-import at.xirado.jdui.replyView
 import at.xirado.jdui.state.ViewState
 import at.xirado.jdui.state.createViewState
 import at.xirado.jdui.utils.decode
 import at.xirado.jdui.utils.mergeCustomIds
 import at.xirado.jdui.view.definition.function.view
 import at.xirado.jdui.view.metadata.ViewMetadata
+import at.xirado.jdui.view.populateMessageContext
+import at.xirado.jdui.view.replyView
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -22,7 +20,6 @@ import kotlinx.serialization.protobuf.ProtoBuf
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
-import net.dv8tion.jda.api.components.Component as JDAComponent
 
 private val log = KotlinLogging.logger { }
 
@@ -57,8 +54,9 @@ internal class ComponentInteractionHandler(private val jdui: JDUIListener) {
 
         if (cachedState != null) {
             val message = updateMessage(event, cachedState)
-            event.editMessage(MessageEditData.fromCreateData(message)).queue()
-            return
+            return event.editMessage(MessageEditData.fromCreateData(message))
+                .populateMessageContext(cachedState.messageContext)
+                .queue()
         }
 
         if (identifier.sourceData == null) {
@@ -68,13 +66,15 @@ internal class ComponentInteractionHandler(private val jdui: JDUIListener) {
                         +text("This action timed out!")
                     }
                 }
-            }, ephemeral = true)
+            }, ephemeral = true).queue()
         }
 
         val state = createViewState(jdui, metadata)
 
         val message = updateMessage(event, state)
-        event.editMessage(MessageEditData.fromCreateData(message)).queue()
+        event.editMessage(MessageEditData.fromCreateData(message))
+            .populateMessageContext(state.messageContext)
+            .queue()
     }
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -85,7 +85,9 @@ internal class ComponentInteractionHandler(private val jdui: JDUIListener) {
         log.debug { "Handling component interaction for view $id" }
         if (cachedState != null) {
             val message = updateMessage(event, cachedState)
-            return event.editMessage(MessageEditData.fromCreateData(message)).queue()
+            return event.editMessage(MessageEditData.fromCreateData(message))
+                .populateMessageContext(cachedState.messageContext)
+                .queue()
         }
 
         log.debug { "Getting state from db: $id" }
@@ -106,17 +108,19 @@ internal class ComponentInteractionHandler(private val jdui: JDUIListener) {
         if (identifier.sourceData == null) {
             return event.replyView(view {
                 compose {
-                    container(accentColor = 0xFF0000) {
-                        text("This action timed out!")
+                    +container(accentColor = 0xFF0000) {
+                        +text("This action timed out!")
                     }
                 }
-            }, ephemeral = true)
+            }, ephemeral = true).queue()
         }
 
         val state = createViewState(jdui, metadata)
         val message = updateMessage(event, state)
 
-        event.editMessage(MessageEditData.fromCreateData(message)).queue()
+        event.editMessage(MessageEditData.fromCreateData(message))
+            .populateMessageContext(state.messageContext)
+            .queue()
     }
 
     private suspend fun updateMessage(event: GenericComponentInteractionCreateEvent, state: ViewState): MessageCreateData {

@@ -42,4 +42,4 @@ fun newCoroutineScope(
     return CoroutineScope(dispatcher + job + errorHandler + context)
 }
 
-suspend fun <T> RestAction<T>.await(): T = submit().await()
+internal suspend fun <T> RestAction<T>.await(): T = submit().await()

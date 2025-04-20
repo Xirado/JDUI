@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.components.button.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import kotlin.reflect.KClass
 import kotlin.reflect.typeOf
 import net.dv8tion.jda.api.components.button.Button as JDAButton
 
