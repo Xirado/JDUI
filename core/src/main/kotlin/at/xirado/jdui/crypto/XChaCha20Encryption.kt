@@ -1,51 +1,45 @@
 package at.xirado.jdui.crypto
 
 import at.xirado.jdui.config.Secret
-import org.bouncycastle.crypto.engines.ChaChaEngine
-import org.bouncycastle.crypto.generators.Argon2BytesGenerator
-import org.bouncycastle.crypto.params.Argon2Parameters
-import org.bouncycastle.crypto.params.KeyParameter
-import org.bouncycastle.crypto.params.ParametersWithIV
-import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
+import javax.crypto.Cipher
+import javax.crypto.SecretKey
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.ChaCha20ParameterSpec
+import javax.crypto.spec.PBEKeySpec
+import javax.crypto.spec.SecretKeySpec
 
-internal const val KEY_SIZE = 32
-
-private val SALT = intArrayOf(0x8C, 0xD0, 0xA8, 0x61, 0x82, 0x01, 0xDC, 0x8F, 0x59, 0xB9, 0xD9, 0x8D, 0x27, 0x45, 0x5C, 0x0E)
-    .map { it.toByte() }
-    .toByteArray()
-
-fun deriveKey(secret: Secret): ByteArray {
-    val params = Argon2Parameters.Builder(Argon2Parameters.ARGON2_id)
-        .withSalt(SALT)
-        .withIterations(3)
-        .withMemoryAsKB(65536)
-        .withParallelism(1)
-        .build()
-
-    val generator = Argon2BytesGenerator()
-    generator.init(params)
-
-    val key = ByteArray(KEY_SIZE)
-    generator.generateBytes(secret.password.toByteArray(StandardCharsets.UTF_8), key, 0, key.size)
-    return key
+internal fun deriveKey(secret: Secret): ByteArray {
+    val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+    val spec = PBEKeySpec(secret.password.toCharArray(), secret.salt, 100000, 256)
+    val key = factory.generateSecret(spec)
+    return key.encoded
 }
 
-fun encrypt(plaintext: ByteArray, key: ByteArray): ByteArray {
-    val chacha = ChaChaEngine(20)
-    val parameters = ParametersWithIV(KeyParameter(key), ByteArray(8) { 0 })
-    chacha.init(true, parameters)
+internal fun encryptChaCha(plaintext: ByteArray, secret: Secret, nonce: ByteArray): ByteArray {
+    val cipher = Cipher.getInstance("ChaCha20")
+    val key: SecretKey = SecretKeySpec(secret.derivedKey, "ChaCha20")
 
-    val ciphertext = ByteArray(plaintext.size)
-    chacha.processBytes(plaintext, 0, plaintext.size, ciphertext, 0)
+    val sha256 = MessageDigest.getInstance("SHA-256")
+    val nonceHashed = sha256.digest(nonce).copyOfRange(0, 12)
+    val spec = ChaCha20ParameterSpec(nonceHashed, 0)
+
+    cipher.init(Cipher.ENCRYPT_MODE, key, spec)
+    val ciphertext = cipher.doFinal(plaintext)
+
     return ciphertext
 }
 
-fun decrypt(ciphertext: ByteArray, key: ByteArray): ByteArray {
-    val chacha = ChaChaEngine(20)
-    val parameters = ParametersWithIV(KeyParameter(key), ByteArray(8) { 0 })
-    chacha.init(false, parameters)
+internal fun decryptChaCha(cipherText: ByteArray, secret: Secret, nonce: ByteArray): ByteArray {
+    val cipher = Cipher.getInstance("ChaCha20")
+    val key: SecretKey = SecretKeySpec(secret.derivedKey, "ChaCha20")
 
-    val plaintext = ByteArray(ciphertext.size)
-    chacha.processBytes(ciphertext, 0, ciphertext.size, plaintext, 0)
-    return plaintext
+    val sha256 = MessageDigest.getInstance("SHA-256")
+    val nonceHashed = sha256.digest(nonce).copyOfRange(0, 12)
+    val spec = ChaCha20ParameterSpec(nonceHashed, 0)
+
+    cipher.init(Cipher.DECRYPT_MODE, key, spec)
+    val ciphertext = cipher.doFinal(cipherText)
+
+    return ciphertext
 }

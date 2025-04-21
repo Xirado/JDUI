@@ -21,16 +21,11 @@ dependencies {
     api("de.mkammerer.snowflake-id:snowflake-id:0.0.2")
     api("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
-    implementation("org.bouncycastle:bcprov-jdk18on:1.80")
-    implementation("de.mkammerer:argon2-jvm:2.12")
-
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
     api("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.8.1")
     api("org.jetbrains.kotlin:kotlin-reflect:2.0.20")
 
     testImplementation(kotlin("test"))
-    testImplementation("org.bouncycastle:bcprov-jdk18on:1.80")
-    testImplementation("de.mkammerer:argon2-jvm:2.12")
     testImplementation("io.github.freya022:JDA:4b468cdd09")
 }
 

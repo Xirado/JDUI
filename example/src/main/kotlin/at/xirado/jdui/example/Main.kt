@@ -7,6 +7,7 @@ import at.xirado.jdui.config.ViewData
 import at.xirado.jdui.config.jdui
 import at.xirado.jdui.context
 import at.xirado.jdui.example.view.*
+import at.xirado.jdui.utils.hexStringToByteArray
 import at.xirado.jdui.view.replyView
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.GlobalScope
@@ -46,9 +47,12 @@ fun main(args: Array<String>) {
 
     val okHttpClient = OkHttpClient()
 
+    val password = "verysecurepassword"
+    val salt = hexStringToByteArray("deadbeefdeadbeef0123012301234567")
+
     val jduiConfig = jdui {
         this.persistenceConfig = persistenceConfig
-        this.secret = Secret("verysecurepasswordyes")
+        this.secret = Secret(password, salt)
         provideContext(okHttpClient)
     }
 

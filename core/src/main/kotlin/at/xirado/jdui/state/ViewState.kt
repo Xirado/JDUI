@@ -4,13 +4,15 @@ import at.xirado.jdui.Context
 import at.xirado.jdui.JDUIListener
 import at.xirado.jdui.component.*
 import at.xirado.jdui.config.ViewData
-import at.xirado.jdui.crypto.encrypt
+import at.xirado.jdui.crypto.encryptChaCha
 import at.xirado.jdui.utils.encode
 import at.xirado.jdui.utils.splitIntoParts
+import at.xirado.jdui.utils.toBytes
 import at.xirado.jdui.view.definition.ViewDefinition
+import at.xirado.jdui.view.metadata.*
+import at.xirado.jdui.view.metadata.EncryptedViewStateMetadata
 import at.xirado.jdui.view.metadata.MessageContext
-import at.xirado.jdui.view.metadata.ViewIdentifier
-import at.xirado.jdui.view.metadata.ViewMetadata
+import at.xirado.jdui.view.metadata.ViewStateMetadata
 import at.xirado.jdui.view.metadata.source.ClassViewSourceData
 import at.xirado.jdui.view.metadata.source.FunctionViewSourceData
 import at.xirado.jdui.view.metadata.source.ViewSourceCache
@@ -31,18 +33,18 @@ private val log = KotlinLogging.logger { }
 
 class ViewState internal constructor(
     internal val listener: JDUIListener,
-    internal val metadata: ViewMetadata,
+    internal val metadata: DecryptedViewStateMetadata,
     internal val viewDefinition: ViewDefinition,
     internal val supportUserState: Boolean,
 ) {
-    internal var coroutineScope = createCoroutineScope(metadata.viewIdentifier)
+    internal var coroutineScope = createCoroutineScope(metadata)
     internal var componentIndex: ComponentIndex? = null
     internal var mutex = Mutex()
     internal val context = Context(listener.context)
     internal val messageContext = MessageContext(WeakReference(listener.jda))
 
-    private var userState = metadata.viewIdentifier.sourceData?.let {
-        if (supportUserState) UserStateCollection(metadata.userState) else null
+    private var userState = metadata.metadata.sourceData?.let {
+        if (supportUserState) UserStateCollection(metadata.metadata.userState) else null
     }
 
     internal suspend fun initialize() {
@@ -66,7 +68,7 @@ class ViewState internal constructor(
 
         val (message, state) = buildComponents(container)
 
-        if (metadata.viewIdentifier.sourceData != null) {
+        if (metadata.metadata.sourceData != null) {
             coroutineScope.launch {
                 saveStateToDatabase(state)
             }
@@ -98,7 +100,7 @@ class ViewState internal constructor(
             val capacity = statefulComponentCount * 100
 
             if (length > capacity) {
-                componentIds = "j2:${metadata.viewIdentifier.id}"
+                componentIds = "j2:${metadata.id}"
             }
 
             log.trace { "Length: ${componentIds.length} Capacity: $capacity, Id: $componentIds" }
@@ -122,17 +124,16 @@ class ViewState internal constructor(
         val persistenceConfig = listener.config.persistenceConfig
             ?: throw IllegalStateException("No PersistenceConfig!")
 
-        persistenceConfig.save(ViewData(metadata.viewIdentifier.id, data))
+        persistenceConfig.save(ViewData(metadata.id, data))
     }
 
     @OptIn(ExperimentalSerializationApi::class)
     private fun createViewMetadata(): ByteArray {
         val userStateSerialized = userState?.serializeAndPackUserData() ?: ByteArray(0)
-        metadata.userState = userStateSerialized
-        val metadataSerialized = ProtoBuf.encodeToByteArray(metadata)
+        metadata.metadata.userState = userStateSerialized
+        val encrypted = metadata.encrypt(listener.config.secret)
 
-        val key = listener.config.secret.derivedKey
-        return encrypt(metadataSerialized, key)
+        return ProtoBuf.encodeToByteArray(encrypted)
     }
 
     private suspend fun getComponentIndex(): ComponentIndex {
@@ -181,12 +182,11 @@ class ViewState internal constructor(
 
 internal suspend fun createViewState(
     jdui: JDUIListener,
-    metadata: ViewMetadata,
+    metadata: DecryptedViewStateMetadata,
     useCache: Boolean = true,
     context: Context? = null,
 ): ViewState {
-    val identifier = metadata.viewIdentifier
-    val sourceData = identifier.sourceData
+    val sourceData = metadata.metadata.sourceData
         ?: throw IllegalStateException("Metadata does not contain SourceData!")
 
     val source = ViewSourceCache.getViewSource(sourceData)
@@ -198,7 +198,7 @@ internal suspend fun createViewState(
     state.initialize()
 
     if (useCache)
-        jdui.messageCache.put(identifier.id, state)
+        jdui.messageCache.put(metadata.id, state)
 
     return state
 }
@@ -210,9 +210,8 @@ internal suspend fun createViewState(
     context: Context? = null,
     ): ViewState {
     val id = jdui.snowflakeGen.next()
-    val identifier = ViewIdentifier(id, sourceData)
 
-    val metadata = ViewMetadata(identifier, ByteArray(0))
+    val metadata = DecryptedViewStateMetadata(id, ViewStateMetadata(sourceData, null))
     return createViewState(jdui, metadata, useCache, context)
 }
 
@@ -223,8 +222,7 @@ internal suspend fun createViewState(
     context: Context? = null,
 ): ViewState {
     val id = jdui.snowflakeGen.next()
-    val identifier = ViewIdentifier(id, null)
-    val metadata = ViewMetadata(identifier, ByteArray(0))
+    val metadata = DecryptedViewStateMetadata(id, ViewStateMetadata(null, null))
 
     val state = ViewState(jdui, metadata, definition, false)
     context?.let { state.context.provideAll(it) }
@@ -237,8 +235,8 @@ internal suspend fun createViewState(
     return state
 }
 
-private fun ViewState.createCoroutineScope(identifier: ViewIdentifier): CoroutineScope {
-    val className = identifier.sourceData.let {
+private fun ViewState.createCoroutineScope(metadata: DecryptedViewStateMetadata): CoroutineScope {
+    val className = metadata.metadata.sourceData.let {
         when (it) {
             is ClassViewSourceData -> it.clazzName
             is FunctionViewSourceData -> it.className
@@ -251,7 +249,7 @@ private fun ViewState.createCoroutineScope(identifier: ViewIdentifier): Coroutin
     val logger = KotlinLogging.logger(className)
 
     val exceptionHandler = CoroutineExceptionHandler { _, t ->
-        logger.error(t) { "Unhandled exception in view ${metadata.viewIdentifier}" }
+        logger.error(t) { "Unhandled exception in view $metadata" }
         job.cancel(CancellationException("An unhandled exception occurred", t))
     }
 
