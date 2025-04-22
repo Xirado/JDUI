@@ -1,12 +1,9 @@
 package at.xirado.jdui
 
 import at.xirado.jdui.config.Secret
-import at.xirado.jdui.crypto.decrypt
-import at.xirado.jdui.crypto.encrypt
-import at.xirado.jdui.utils.decode
-import at.xirado.jdui.utils.encode
-import at.xirado.jdui.utils.packProtoMessages
-import at.xirado.jdui.utils.unpackProtoMessages
+import at.xirado.jdui.crypto.decryptChaCha
+import at.xirado.jdui.crypto.encryptChaCha
+import at.xirado.jdui.utils.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromByteArray
@@ -32,14 +29,17 @@ class ProtobufTest {
 
         val packed = packProtoMessages(listOf(fooSer, barSer))
 
-        val secret = Secret("verysecretpassword123")
+        val password = "verysecretpassword123"
+        val salt = hexStringToByteArray("deadbeefdeadbeef0123012301234567")
+        val secret = Secret(password, salt)
 
-        val encrypted = encrypt(packed, secret.derivedKey)
+        val nonce = hexStringToByteArray("deadbeef")
+        val encrypted = encryptChaCha(packed, secret, nonce)
 
         val encoded = encode(encrypted)
 
         val decoded = decode(encoded)
-        val decrypted = decrypt(decoded, secret.derivedKey)
+        val decrypted = decryptChaCha(decoded, secret, nonce)
         val unpacked = unpackProtoMessages(decrypted)
 
         val fooDeser = ProtoBuf.decodeFromByteArray<Foo>(unpacked[0])

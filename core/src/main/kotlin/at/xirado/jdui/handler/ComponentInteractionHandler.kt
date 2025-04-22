@@ -3,13 +3,13 @@ package at.xirado.jdui.handler
 import at.xirado.jdui.JDUIListener
 import at.xirado.jdui.component.message.container
 import at.xirado.jdui.component.message.text
-import at.xirado.jdui.crypto.decrypt
+import at.xirado.jdui.crypto.decryptChaCha
 import at.xirado.jdui.state.ViewState
 import at.xirado.jdui.state.createViewState
 import at.xirado.jdui.utils.decode
 import at.xirado.jdui.utils.mergeCustomIds
 import at.xirado.jdui.view.definition.function.view
-import at.xirado.jdui.view.metadata.ViewMetadata
+import at.xirado.jdui.view.metadata.EncryptedViewStateMetadata
 import at.xirado.jdui.view.populateMessageContext
 import at.xirado.jdui.view.replyView
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -41,13 +41,12 @@ internal class ComponentInteractionHandler(private val jdui: JDUIListener) {
         val data = componentId.substringAfter("j1:")
 
         val decodedData = decode(data)
+
+        val metadataEncrypted: EncryptedViewStateMetadata = ProtoBuf.decodeFromByteArray(decodedData)
+
         val secret = config.secret
-        val decrypted = decrypt(decodedData, secret.derivedKey)
-
-        val metadata = ProtoBuf.decodeFromByteArray<ViewMetadata>(decrypted)
-
-        val identifier = metadata.viewIdentifier
-        val id = identifier.id
+        val metadata = metadataEncrypted.decrypt(secret)
+        val id = metadata.id
 
         log.debug { "Handling component interaction for view $id" }
         val cachedState = jdui.messageCache.getIfPresent(id)
@@ -59,7 +58,7 @@ internal class ComponentInteractionHandler(private val jdui: JDUIListener) {
                 .queue()
         }
 
-        if (identifier.sourceData == null) {
+        if (metadata.metadata.sourceData == null) {
             return event.replyView(view {
                 compose {
                     +container(accentColor = 0xFF0000) {
@@ -99,13 +98,11 @@ internal class ComponentInteractionHandler(private val jdui: JDUIListener) {
             ?: throw IllegalStateException("No such view with id $id")
 
         val secret = config.secret
-        val decrypted = decrypt(retrievedState.data, secret.derivedKey)
+        val encryptedMetadata: EncryptedViewStateMetadata = ProtoBuf.decodeFromByteArray(retrievedState.data)
 
-        val metadata = ProtoBuf.decodeFromByteArray<ViewMetadata>(decrypted)
+        val metadata = encryptedMetadata.decrypt(secret)
 
-        val identifier = metadata.viewIdentifier
-
-        if (identifier.sourceData == null) {
+        if (metadata.metadata.sourceData == null) {
             return event.replyView(view {
                 compose {
                     +container(accentColor = 0xFF0000) {
