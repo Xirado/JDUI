@@ -25,9 +25,7 @@ internal fun encryptChaCha(plaintext: ByteArray, secret: Secret, nonce: ByteArra
     val spec = ChaCha20ParameterSpec(nonceHashed, 0)
 
     cipher.init(Cipher.ENCRYPT_MODE, key, spec)
-    val ciphertext = cipher.doFinal(plaintext)
-
-    return ciphertext
+    return cipher.doFinal(plaintext)
 }
 
 internal fun decryptChaCha(cipherText: ByteArray, secret: Secret, nonce: ByteArray): ByteArray {
@@ -39,7 +37,5 @@ internal fun decryptChaCha(cipherText: ByteArray, secret: Secret, nonce: ByteArr
     val spec = ChaCha20ParameterSpec(nonceHashed, 0)
 
     cipher.init(Cipher.DECRYPT_MODE, key, spec)
-    val ciphertext = cipher.doFinal(cipherText)
-
-    return ciphertext
+    return cipher.doFinal(cipherText)
 }
