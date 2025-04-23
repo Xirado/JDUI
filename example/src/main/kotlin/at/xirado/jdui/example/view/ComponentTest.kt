@@ -30,21 +30,17 @@ fun componentTest() = view {
     compose {
         description?.let { +text(it) }
         +container(0x42b9f5) {
-            +section {
-                accessory {
-                    button(ButtonStyle.SECONDARY, "Accessory button") {
-                        description = "Accessory button was used"
-                    }
-                }
+            val accessoryButton = button(ButtonStyle.SECONDARY, "Accessory button") {
+                description = "Accessory button was used"
+            }
+
+            +section(accessoryButton) {
                 +text("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ultricies vestibulum nisi, at ullamcorper sapien euismod vitae.")
                 +text("Proin lacinia gravida pretium. Etiam fringilla mauris sed tincidunt tempor. Proin eu lacus.")
             }
         }
         +container(0x42b9f5) {
-            +section {
-                accessory {
-                    thumbnail("https://cdn.xirado.dev/tvpattern.jpg")
-                }
+            +section(accessory = thumbnail("https://cdn.xirado.dev/tvpattern.jpg")) {
                 +text("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ultricies vestibulum nisi, at ullamcorper sapien euismod vitae.")
                 +text("Proin lacinia gravida pretium. Etiam fringilla mauris sed tincidunt tempor. Proin eu lacus.")
             }

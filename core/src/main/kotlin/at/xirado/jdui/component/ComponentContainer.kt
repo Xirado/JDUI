@@ -27,14 +27,10 @@ fun <T, C> ComponentContainer<T, C>.count(block: (Component<out Any>) -> Boolean
 }
 
 abstract class AccessoryComponentContainer<T, C, A: JDAComponent>: ComponentContainer<T, C>() {
-    internal var accessory: Component<out A>? = null
+    abstract val accessory: Component<out A>?
 
     override fun build(uniqueId: Int, children: Collection<C>): T {
         throw IllegalStateException("Unsupported")
-    }
-
-    fun <T: Component<out A>> accessory(block: () -> T) {
-        accessory = block()
     }
 
     abstract fun build(uniqueId: Int, children: Collection<C>, accessory: A?): T

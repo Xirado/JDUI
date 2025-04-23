@@ -48,12 +48,9 @@ class UrbanDictionaryView : View() {
                 return@container
             }
 
-            +section {
+            +section(accessory = thumbnail("https://bean.bz/assets/udlogo.png")) {
                 +text("## [${current.word}](${current.permalink})")
                 +text(current.definition.processDefinitionHyperlinks())
-                accessory {
-                    thumbnail("https://bean.bz/assets/udlogo.png")
-                }
             }
             +separator(true, Separator.Spacing.SMALL)
 

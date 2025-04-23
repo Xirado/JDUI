@@ -1,12 +1,15 @@
 package at.xirado.jdui.component.message
 
 import at.xirado.jdui.component.AccessoryComponentContainer
+import at.xirado.jdui.component.Component
 import net.dv8tion.jda.api.components.section.SectionContentComponent
 import kotlin.reflect.typeOf
 import net.dv8tion.jda.api.components.section.Section as JDASection
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponent as JDASectionAccessoryComponent
 
-class Section : AccessoryComponentContainer<JDASection, SectionContentComponent, JDASectionAccessoryComponent>() {
+class Section(
+    override val accessory: Component<out JDASectionAccessoryComponent>
+) : AccessoryComponentContainer<JDASection, SectionContentComponent, JDASectionAccessoryComponent>() {
     override fun build(
         uniqueId: Int,
         children: Collection<SectionContentComponent>,
@@ -22,7 +25,8 @@ class Section : AccessoryComponentContainer<JDASection, SectionContentComponent,
 }
 
 fun section(
+    accessory: Component<out JDASectionAccessoryComponent>,
     block: Section.() -> Unit
 ): Section {
-    return Section().apply(block)
+    return Section(accessory).apply(block)
 }
