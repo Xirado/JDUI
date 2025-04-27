@@ -1,7 +1,6 @@
 package at.xirado.jdui.view.metadata
 
 import at.xirado.jdui.utils.await
-import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.WebhookClient
@@ -12,8 +11,6 @@ import net.dv8tion.jda.api.utils.messages.MessageEditData
 import okio.withLock
 import java.lang.ref.WeakReference
 import java.util.concurrent.locks.ReentrantLock
-
-private val log = KotlinLogging.logger { }
 
 internal class MessageContext(
     private val jda: WeakReference<JDA>
@@ -34,7 +31,8 @@ internal class MessageContext(
 
         if (hook.hasCallbackResponse() && messageSource == null) {
             hook.callbackResponse.message?.let {
-                provideMessageSource(it.channelIdLong, it.idLong)
+                if (Message.MessageFlag.EPHEMERAL !in it.flags)
+                    provideMessageSource(it.channelIdLong, it.idLong)
             }
         }
     }
