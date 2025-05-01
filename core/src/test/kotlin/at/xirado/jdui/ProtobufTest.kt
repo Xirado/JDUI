@@ -42,8 +42,8 @@ class ProtobufTest {
         val decrypted = decryptChaCha(decoded, secret, nonce)
         val unpacked = unpackProtoMessages(decrypted)
 
-        val fooDeser = ProtoBuf.decodeFromByteArray<Foo>(unpacked[0])
-        val barDeser = ProtoBuf.decodeFromByteArray<Bar>(unpacked[1])
+        val fooDeser = ProtoBuf.decodeFromByteArray<Foo>(unpacked[0]!!)
+        val barDeser = ProtoBuf.decodeFromByteArray<Bar>(unpacked[1]!!)
 
         assertEquals(foo, fooDeser)
         assertEquals(bar, barDeser)
