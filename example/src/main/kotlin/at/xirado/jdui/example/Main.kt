@@ -76,6 +76,9 @@ fun main(args: Array<String>) {
         .addCommands(Commands.slash("multi-menu", "Test multi-menu")
             .setIntegrationTypes(IntegrationType.USER_INSTALL).setContexts(InteractionContextType.ALL)
         )
+        .addCommands(Commands.slash("state-test", "Test view state")
+            .setIntegrationTypes(IntegrationType.USER_INSTALL).setContexts(InteractionContextType.ALL)
+        )
         .addCommands(Commands.slash("urban", "Urban dictionary")
             .addOptions(OptionData(OptionType.STRING, "term", "What to search for", true))
             .setIntegrationTypes(IntegrationType.USER_INSTALL).setContexts(InteractionContextType.ALL)
@@ -119,6 +122,7 @@ object CommandListener : ListenerAdapter() {
                 "separator" -> event.replyView(::separatorTestView).await()
                 "test" -> event.replyView(::componentTest).await()
                 "multi-menu" -> event.replyView<MultipleMenusView>().await()
+                "state-test" -> event.replyView(::stateTest).await()
                 "urban" -> {
                     val term = event.options[0].asString
                     val context = context { +UrbanDictionaryQuery(term) }

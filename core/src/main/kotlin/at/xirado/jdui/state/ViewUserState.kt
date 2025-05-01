@@ -14,7 +14,7 @@ fun <T> ViewDefinition.state(default: T): PropertyDelegateProvider<Any?, UserSta
 
     return PropertyDelegateProvider { _, property ->
         val delegate = UserStateProperty(userState.size, property as KProperty<T>, default, viewState)
-
+        state.registerUserState(delegate)
         userState += delegate
         delegate
     }

@@ -13,25 +13,28 @@ internal class UserStateCollection(
 
     @Suppress("UNCHECKED_CAST")
     @OptIn(ExperimentalSerializationApi::class)
-    fun <T> getUserState(property: UserStateProperty<T>): T {
+    internal fun <T> tryInitProperty(property: UserStateProperty<T>) {
         property as UserStateProperty<Any?>
         val index = property.index
 
-        if (!userState.containsKey(property)) {
-            if (index > unpackedUserState.lastIndex) {
-                userState[property] = property.default
-                return property.default
-            }
+        if (userState.containsKey(property))
+            return
 
-            val serialized = unpackedUserState[index]
-            val deserialized = if (serialized.isNotEmpty())
-                ProtoBuf.decodeFromByteArray(property.serializer, serialized)
-            else
-                null
-
-            userState[property] = deserialized
-            return deserialized as T
+        if (index > unpackedUserState.lastIndex) {
+            userState[property] = property.default
+            return
         }
+
+        val serialized = unpackedUserState[index]
+        val deserialized = serialized?.let { ProtoBuf.decodeFromByteArray(property.serializer, serialized) }
+
+        userState[property] = deserialized
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getUserState(property: UserStateProperty<T>): T {
+        property as UserStateProperty<Any?>
+        tryInitProperty(property)
 
         return userState[property] as T
     }
@@ -48,10 +51,7 @@ internal class UserStateCollection(
             .sortedBy { it.key.index }
             .map {
                 val value = it.value
-                if (value != null)
-                    ProtoBuf.encodeToByteArray(it.key.serializer, it.value)
-                else
-                    ByteArray(0)
+                value?.let { value -> ProtoBuf.encodeToByteArray(it.key.serializer, value) }
             }
 
         return packProtoMessages(serialized)

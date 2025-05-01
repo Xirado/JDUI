@@ -147,6 +147,10 @@ class ViewState internal constructor(
         return index
     }
 
+    internal fun <T> registerUserState(property: UserStateProperty<T>) {
+        userState?.tryInitProperty(property)
+    }
+
     internal fun <T> getUserState(property: UserStateProperty<T>): T {
         val userState = this.userState
             ?: throw IllegalStateException("View cannot have a state!")

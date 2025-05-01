@@ -2,36 +2,52 @@ package at.xirado.jdui.utils
 
 import java.io.ByteArrayOutputStream
 
-fun unpackProtoMessages(data: ByteArray?): List<ByteArray> {
+fun unpackProtoMessages(data: ByteArray?): List<ByteArray?> {
     if (data == null)
         return emptyList()
 
-    val messages = mutableListOf<ByteArray>()
+    val messages = mutableListOf<ByteArray?>()
     var index = 0
 
     while (index < data.size) {
         val (length, newIndex) = decodeVarint(data, index) ?: break
-        index = newIndex
 
-        if (index + length > data.size) {
+        if (length == 0) { // message is null
+            messages.add(null)
+            index = newIndex
+            continue
+        } else if (length == 1) { // empty array
+            messages.add(byteArrayOf())
+            index = newIndex
+            continue
+        }
+
+        index = newIndex
+        val realLength = length - 1 // account offset for null message
+
+        if (index + realLength > data.size) {
             throw IllegalArgumentException("Incomplete message detected")
         }
 
-        val message = data.copyOfRange(index, index + length)
+        val message = data.copyOfRange(index, index + realLength)
         messages.add(message)
-        index += length
+        index += realLength
     }
 
     return messages
 }
 
-fun packProtoMessages(messages: List<ByteArray>): ByteArray {
+fun packProtoMessages(messages: List<ByteArray?>): ByteArray {
     val outputStream = ByteArrayOutputStream()
 
     for (message in messages) {
-        val lengthPrefix = encodeVarint(message.size)
+        val isNull = message == null
+        val size = message?.let { it.size + 1 } ?: 0
+        val lengthPrefix = encodeVarint(size)
         outputStream.write(lengthPrefix)
-        outputStream.write(message)
+
+        if (!isNull)
+            outputStream.write(message)
     }
 
     return outputStream.toByteArray()
