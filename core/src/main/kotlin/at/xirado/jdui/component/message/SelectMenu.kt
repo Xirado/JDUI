@@ -73,3 +73,14 @@ fun stringSelect(
 ): StringSelectMenu {
     return StringSelectMenu(options, range, placeholder, disabled, callback)
 }
+
+fun entitySelect(
+    targets: Collection<JDAEntitySelectMenu.SelectTarget>,
+    channelTypes: Collection<ChannelType> = ChannelType.guildTypes(),
+    range: IntRange = 1..1,
+    placeholder: String? = null,
+    disabled: Boolean = false,
+    callback: EntityCallback
+) : EntitySelectMenu {
+    return EntitySelectMenu(targets, channelTypes, range, placeholder, disabled, callback)
+}
