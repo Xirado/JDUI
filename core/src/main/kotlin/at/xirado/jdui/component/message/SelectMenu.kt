@@ -75,12 +75,12 @@ fun stringSelect(
 }
 
 fun entitySelect(
-    options: Collection<JDAEntitySelectMenu.SelectTarget>,
-    channelType: Collection<ChannelType> = ChannelType.guildTypes(),
+    targets: Collection<JDAEntitySelectMenu.SelectTarget>,
+    channelTypes: Collection<ChannelType> = ChannelType.guildTypes(),
     range: IntRange = 1..1,
     placeholder: String? = null,
     disabled: Boolean = false,
     callback: EntityCallback
 ) : EntitySelectMenu {
-    return EntitySelectMenu(options, channelType,range,placeholder,disabled,callback)
+    return EntitySelectMenu(targets, channelTypes, range, placeholder, disabled, callback)
 }

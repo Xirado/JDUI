@@ -72,8 +72,8 @@ fun componentTest() = view {
                 }
             }
             +row {
-                val selectTypes = listOf(EntitySelectMenu.SelectTarget.CHANNEL)
-                +entitySelect(selectTypes, placeholder = "Select a channel") {
+                val selectTargets = listOf(EntitySelectMenu.SelectTarget.CHANNEL)
+                +entitySelect(selectTargets, placeholder = "Select a channel") {
                     println("Test")
                 }
             }
