@@ -68,7 +68,7 @@ fun componentTest() = view {
             +row {
                 val options = emojis.map { SelectOption.of(it.key, it.value).withEmoji(Emoji.fromUnicode(it.value)) }
                 +stringSelect(options, placeholder = "Select an emoji") {
-                    selectedOptions.forEach { emojiString += it.value }
+                    event.selectedOptions.forEach { emojiString += it.value }
                 }
             }
             +row {
