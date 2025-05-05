@@ -1,10 +1,11 @@
 package at.xirado.jdui.component.message
 
+import at.xirado.jdui.component.ComponentCallback
 import at.xirado.jdui.component.StatefulActionComponent
+import at.xirado.jdui.state.interaction.ViewComponentInteraction
 import net.dv8tion.jda.api.components.selects.SelectOption
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import kotlin.reflect.typeOf
 import net.dv8tion.jda.api.components.selects.EntitySelectMenu as JDAEntitySelectMenu
@@ -18,7 +19,7 @@ class StringSelectMenu(
     var range: IntRange,
     var placeholder: String?,
     var disabled: Boolean,
-    override val callback: StringCallback
+    override val callback: ComponentCallback<StringSelectInteractionEvent>
 ) : StatefulActionComponent<JDAStringSelectMenu, StringSelectInteractionEvent>() {
     override fun buildComponent(id: String, uniqueId: Int): JDAStringSelectMenu {
         return JDAStringSelectMenu.create(id)
@@ -30,12 +31,12 @@ class StringSelectMenu(
             .build()
     }
 
-    override suspend fun processInteraction(event: GenericComponentInteractionCreateEvent) {
-        callback(event as StringSelectInteractionEvent)
+    override suspend fun processInteraction(interaction: ViewComponentInteraction<StringSelectInteractionEvent>) {
+        callback(interaction)
     }
 
     override val type = typeOf<JDAStringSelectMenu>()
-    override val callbackClazz = StringSelectInteractionEvent::class
+    override val eventClazz = StringSelectInteractionEvent::class
 }
 
 class EntitySelectMenu(
@@ -44,7 +45,7 @@ class EntitySelectMenu(
     var range: IntRange,
     var placeholder: String?,
     var disabled: Boolean,
-    override val callback: EntityCallback,
+    override val callback: ComponentCallback<EntitySelectInteractionEvent>,
 ) : StatefulActionComponent<JDAEntitySelectMenu, EntitySelectInteractionEvent>() {
     override fun buildComponent(id: String, uniqueId: Int): JDAEntitySelectMenu {
         return JDAEntitySelectMenu.create(id, targets)
@@ -56,12 +57,12 @@ class EntitySelectMenu(
             .build()
     }
 
-    override suspend fun processInteraction(event: GenericComponentInteractionCreateEvent) {
-        callback(event as EntitySelectInteractionEvent)
+    override suspend fun processInteraction(interaction: ViewComponentInteraction<EntitySelectInteractionEvent>) {
+        callback(interaction)
     }
 
     override val type = typeOf<JDAEntitySelectMenu>()
-    override val callbackClazz = EntitySelectInteractionEvent::class
+    override val eventClazz = EntitySelectInteractionEvent::class
 }
 
 fun stringSelect(
@@ -69,7 +70,7 @@ fun stringSelect(
     range: IntRange = 1..1,
     placeholder: String? = null,
     disabled: Boolean = false,
-    callback: StringCallback
+    callback: ComponentCallback<StringSelectInteractionEvent>
 ): StringSelectMenu {
     return StringSelectMenu(options, range, placeholder, disabled, callback)
 }
@@ -80,7 +81,7 @@ fun entitySelect(
     range: IntRange = 1..1,
     placeholder: String? = null,
     disabled: Boolean = false,
-    callback: EntityCallback
+    callback: ComponentCallback<EntitySelectInteractionEvent>
 ) : EntitySelectMenu {
     return EntitySelectMenu(targets, channelTypes, range, placeholder, disabled, callback)
 }
