@@ -30,7 +30,7 @@ fun counterView() = view {
         +row {
             +button(ButtonStyle.SECONDARY, "Increment by $step") {
                 counter += step
-                lastUpdate = LastUpdate(user.name, step)
+                lastUpdate = LastUpdate(event.user.name, step)
 
             }
             +button(ButtonStyle.PRIMARY, "-1", disabled = step == 1) {
