@@ -36,7 +36,7 @@ class ViewState internal constructor(
     internal var componentIndex: ComponentIndex? = null
     internal var mutex = Mutex()
     internal val context = Context(listener.context)
-    internal val messageContext = MessageContext(WeakReference(listener.jda))
+    internal val messageContext = MessageContext(this)
 
     private var userState = metadata.metadata.sourceData?.let {
         if (supportUserState) UserStateCollection(metadata.metadata.userState) else null

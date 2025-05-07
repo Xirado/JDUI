@@ -10,6 +10,7 @@ import at.xirado.jdui.utils.mergeCustomIds
 import at.xirado.jdui.view.ViewDSL
 import at.xirado.jdui.view.createFunctionViewState
 import at.xirado.jdui.view.definition.function.ViewDefinitionFunction
+import at.xirado.jdui.view.populateMessageContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -39,13 +40,18 @@ class ViewComponentInteraction<E: GenericComponentInteractionCreateEvent> privat
             throw IllegalStateException("Can only call processEvent() once!")
 
         val component = initialize()
+
+        state.messageContext.provideInteractionHook(event.hook)
+
         component.processInteraction(this)
         val result = this.result
 
         when (result) {
             is UpdateMessage -> {
                 val message = state.composeMessage()
-                event.editMessage(MessageEditData.fromCreateData(message)).queue()
+                event.editMessage(MessageEditData.fromCreateData(message))
+                    .populateMessageContext(state.messageContext)
+                    .queue()
             }
             is SendFollowup -> {
                 val ephemeral = result.ephemeral
