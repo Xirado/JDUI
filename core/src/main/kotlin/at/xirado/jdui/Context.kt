@@ -79,12 +79,15 @@ class Context(
         return value
     }
 
+    fun copy(includeParent: Boolean = true): Context {
+        val parent = if (includeParent) this.parent?.copy() else null
+        val newContext = Context(parent)
+        newContext.provideAll(this)
+        return newContext
+    }
+
     companion object {
-        fun copyOf(other: Context) = Context().apply {
-            other.lock.read {
-                context.putAll(other.context)
-            }
-        }
+        fun copyOf(other: Context, includeParent: Boolean = true) = other.copy(includeParent)
     }
 }
 

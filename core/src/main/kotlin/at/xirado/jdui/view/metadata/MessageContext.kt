@@ -1,8 +1,8 @@
 package at.xirado.jdui.view.metadata
 
+import at.xirado.jdui.state.ViewState
 import at.xirado.jdui.utils.await
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.WebhookClient
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
@@ -10,14 +10,12 @@ import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import okio.withLock
-import java.lang.ref.WeakReference
 import java.util.concurrent.locks.ReentrantLock
 
-private val log = KotlinLogging.logger { }
-
 internal class MessageContext(
-    private val jda: WeakReference<JDA>
+    private val viewState: ViewState,
 ) {
+    private val jda = viewState.listener.jda
     private val lock = ReentrantLock()
 
     private var webhook: WebhookMessageSource? = null
@@ -34,7 +32,8 @@ internal class MessageContext(
 
         if (hook.hasCallbackResponse() && messageSource == null) {
             hook.callbackResponse.message?.let {
-                provideMessageSource(it.channelIdLong, it.idLong)
+                if (Message.MessageFlag.EPHEMERAL !in it.flags)
+                    provideMessageSource(it.channelIdLong, it.idLong)
             }
         }
     }
@@ -88,7 +87,7 @@ internal class MessageContext(
         messageData: MessageEditData
     ): RestAction<Message>? {
         val messageSource = this.messageSource ?: return null
-        val jda = this.jda.get() ?: return null
+        val jda = this.jda
 
         val channel = jda.getChannelById(MessageChannel::class.java, messageSource.channelId)
             ?: return null
