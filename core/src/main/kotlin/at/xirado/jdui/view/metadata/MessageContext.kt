@@ -1,7 +1,8 @@
 package at.xirado.jdui.view.metadata
 
+import at.xirado.jdui.state.ViewState
 import at.xirado.jdui.utils.await
-import net.dv8tion.jda.api.JDA
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.WebhookClient
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
@@ -9,12 +10,12 @@ import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import okio.withLock
-import java.lang.ref.WeakReference
 import java.util.concurrent.locks.ReentrantLock
 
 internal class MessageContext(
-    private val jda: WeakReference<JDA>
+    private val viewState: ViewState,
 ) {
+    private val jda = viewState.listener.jda
     private val lock = ReentrantLock()
 
     private var webhook: WebhookMessageSource? = null
@@ -86,7 +87,7 @@ internal class MessageContext(
         messageData: MessageEditData
     ): RestAction<Message>? {
         val messageSource = this.messageSource ?: return null
-        val jda = this.jda.get() ?: return null
+        val jda = this.jda
 
         val channel = jda.getChannelById(MessageChannel::class.java, messageSource.channelId)
             ?: return null
