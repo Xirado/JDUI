@@ -1,7 +1,9 @@
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
 }
 
-rootProject.name = "JDUI"
-include("core")
-include("example")
+rootProject.name = "jdui"
+
+include("core", "example")

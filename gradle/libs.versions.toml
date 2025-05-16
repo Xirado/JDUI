@@ -1,0 +1,31 @@
+[versions]
+kotlin = "2.1.0"
+publishing = "0.31.0"
+
+kotlin-coroutines = "1.10.1"
+kotlin-protobuf = "1.8.1"
+
+jda = "54038f1cec"
+slf4j-api = "2.0.13"
+kotlin-logging = "5.1.0"
+snowflake-id = "0.0.2"
+caffeine = "3.1.8"
+
+[libraries]
+jvm = { group = "org.jetbrains.kotlin.jvm", name = "org.jetbrains.kotlin.jvm.gradle.plugin", version.ref = "kotlin" }
+kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlin-coroutines" }
+kotlin-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlin-protobuf" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+jda = { module = "io.github.freya022:JDA", version.ref = "jda" }
+slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-api" }
+kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
+snowflake = { module = "de.mkammerer.snowflake-id:snowflake-id", version.ref = "snowflake-id" }
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
+publishing = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "publishing" }
+
+[plugins]
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
