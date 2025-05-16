@@ -4,11 +4,11 @@ import at.xirado.jdui.component.ComponentCallback
 import at.xirado.jdui.component.StatefulActionComponent
 import at.xirado.jdui.component.StatelessComponent
 import at.xirado.jdui.state.interaction.ViewComponentInteraction
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import kotlin.reflect.typeOf
-import net.dv8tion.jda.api.components.button.Button as JDAButton
+import net.dv8tion.jda.api.components.buttons.Button as JDAButton
 
 class ActionButton(
     var style: ButtonStyle,

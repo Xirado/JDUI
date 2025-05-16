@@ -6,7 +6,7 @@ import at.xirado.jdui.component.row
 import at.xirado.jdui.state.state
 import at.xirado.jdui.view.definition.function.view
 import kotlinx.serialization.Serializable
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 
 @Serializable
 data class LastUpdate(
