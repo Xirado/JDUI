@@ -8,7 +8,7 @@ class TextDisplay(
     var content: String
 ) : StatelessComponent<JDATextDisplay>() {
     override fun buildComponent(uniqueId: Int): JDATextDisplay {
-        return JDATextDisplay.create(content).withUniqueId(uniqueId)
+        return JDATextDisplay.of(content).withUniqueId(uniqueId)
     }
 
     override val type = typeOf<JDATextDisplay>()
