@@ -9,10 +9,10 @@ allprojects {
     version = "0.1.0-SNAPSHOT"
 }
 
+val toPublish = listOf("core")
+
 subprojects {
-    afterEvaluate {
-        if (name != "example") {
-            configurePublishing()
-        }
+    if (name in toPublish) {
+        configurePublishing()
     }
 }

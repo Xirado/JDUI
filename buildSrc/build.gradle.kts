@@ -4,7 +4,7 @@ repositories {
 }
 
 plugins {
-    kotlin("jvm") version "2.1.0" // 👈 use the correct version
+    alias(libs.plugins.kotlinJvm)
     `kotlin-dsl` apply true
 }
 

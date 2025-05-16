@@ -16,18 +16,18 @@ fun Project.configurePublishing() {
     val mavenCentralUsername: String? by project
     val mavenCentralPassword: String? by project
 
-    val pgpKeyId: String? by project
-    val pgpSecretKey: String? by project
+    val signingInMemoryKeyId: String? by project
+    val signingInMemoryKey: String? by project
+    val signingInMemoryKeyPassword: String? by project
 
-    val canSign = pgpKeyId != null && pgpSecretKey != null
+    val canSign = signingInMemoryKeyId != null && signingInMemoryKey != null
     val isSnapshot = (version as String).endsWith("-SNAPSHOT")
     val canPublish = mavenCentralUsername != null && mavenCentralPassword != null && (canSign || isSnapshot)
 
     if (canPublish) {
-        println("Configuring maven publishing ${project.name}")
         configure<SigningExtension> {
             isRequired = !isSnapshot
-            useInMemoryPgpKeys(pgpKeyId, pgpSecretKey, "")
+            useInMemoryPgpKeys(signingInMemoryKeyId, signingInMemoryKeyId, signingInMemoryKeyPassword ?: "")
         }
 
         configure<MavenPublishBaseExtension> {
