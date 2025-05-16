@@ -31,7 +31,7 @@ fun Project.configurePublishing() {
         }
 
         configure<MavenPublishBaseExtension> {
-            publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
+            publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = false)
             signAllPublications()
             coordinates("dev.xirado", "jdui-${project.name}", project.version as String)
 
