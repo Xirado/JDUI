@@ -27,4 +27,27 @@ fun counterView() = view {
 * Dependency injection using global and per-view context
 
 ## Installation
-WIP
+[![maven-central][]](https://img.shields.io/maven-central/v/dev.xirado/jdui-core)
+[![jitpack][]](https://jitpack.io/#discord-jda/JDA)
+
+### Gradle
+
+```gradle
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("dev.xirado:jdui-core:0.1.1")
+}
+```
+
+### Maven
+
+```xml
+<dependency>
+    <groupId>dev.xirado</groupId>
+    <artifactId>jdui-core</artifactId>
+    <version>0.1.1</version>
+</dependency>
+```
