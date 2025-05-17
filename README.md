@@ -1,3 +1,9 @@
+[maven-central]: https://img.shields.io/maven-central/v/dev.xirado/jdui-core?color=blue
+[jitpack]: https://img.shields.io/badge/Snapshots-JitPack-blue
+
+[![maven-central][]](https://img.shields.io/maven-central/v/dev.xirado/jdui-core)
+[![jitpack][]](https://jitpack.io/#dev.xirado/jdui-core)
+
 # JDUI
 A Kotlin library for effortlessly creating stateful and interactive messages in Discord with 0 boilerplate
 
@@ -28,7 +34,7 @@ fun counterView() = view {
 
 ## Installation
 [![maven-central][]](https://img.shields.io/maven-central/v/dev.xirado/jdui-core)
-[![jitpack][]](https://jitpack.io/#discord-jda/JDA)
+[![jitpack][]](https://jitpack.io/#dev.xirado/jdui-core)
 
 ### Gradle
 
