@@ -6,7 +6,7 @@ import at.xirado.jdui.component.StatefulActionComponent
 import at.xirado.jdui.state.ViewState
 import at.xirado.jdui.state.getViewStateByDiscordCustomIds
 import at.xirado.jdui.utils.await
-import at.xirado.jdui.utils.mergeCustomIds
+import at.xirado.jdui.utils.tryMergeIds
 import at.xirado.jdui.view.ViewDSL
 import at.xirado.jdui.view.createFunctionViewState
 import at.xirado.jdui.view.definition.function.ViewDefinitionFunction
@@ -17,6 +17,8 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import kotlin.reflect.KFunction
+
+internal val allowedCustomIdPrefixes = setOf("j1:", "j2:")
 
 @ViewDSL
 class ViewComponentInteraction<E: GenericComponentInteractionCreateEvent> private constructor(
@@ -37,7 +39,7 @@ class ViewComponentInteraction<E: GenericComponentInteractionCreateEvent> privat
 
     internal suspend fun process() = mutex.withLock {
         if (isInitialized)
-            throw IllegalStateException("Can only call processEvent() once!")
+            throw IllegalStateException("Can only call process() once!")
 
         val component = initialize()
 
@@ -79,7 +81,8 @@ class ViewComponentInteraction<E: GenericComponentInteractionCreateEvent> privat
             event: E,
             receivedTimestamp: Long,
         ): ViewComponentInteraction<E>? {
-            val id = event.message.components.mergeCustomIds()
+            val id = event.message.components.tryMergeIds(allowedCustomIdPrefixes)
+                ?: return null
             val state = getViewStateByDiscordCustomIds(jdui, id) ?: return null
 
             return ViewComponentInteraction(state, event, receivedTimestamp)
