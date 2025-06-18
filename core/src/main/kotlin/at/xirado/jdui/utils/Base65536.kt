@@ -10,7 +10,7 @@ private val B2: Map<Int, Int> = mapOf(
     5376 to -1, 13312 to 0, 13568 to 1, 13824 to 2, 14080 to 3, 14336 to 4, 14592 to 5, 14848 to 6, 15104 to 7, 15360 to 8, 15616 to 9, 15872 to 10, 16128 to 11, 16384 to 12, 16640 to 13, 16896 to 14, 17152 to 15, 17408 to 16, 17664 to 17, 17920 to 18, 18176 to 19, 18432 to 20, 18688 to 21, 18944 to 22, 19200 to 23, 19456 to 24, 19968 to 25, 20224 to 26, 20480 to 27, 20736 to 28, 20992 to 29, 21248 to 30, 21504 to 31, 21760 to 32, 22016 to 33, 22272 to 34, 22528 to 35, 22784 to 36, 23040 to 37, 23296 to 38, 23552 to 39, 23808 to 40, 24064 to 41, 24320 to 42, 24576 to 43, 24832 to 44, 25088 to 45, 25344 to 46, 25600 to 47, 25856 to 48, 26112 to 49, 26368 to 50, 26624 to 51, 26880 to 52, 27136 to 53, 27392 to 54, 27648 to 55, 27904 to 56, 28160 to 57, 28416 to 58, 28672 to 59, 28928 to 60, 29184 to 61, 29440 to 62, 29696 to 63, 29952 to 64, 30208 to 65, 30464 to 66, 30720 to 67, 30976 to 68, 31232 to 69, 31488 to 70, 31744 to 71, 32000 to 72, 32256 to 73, 32512 to 74, 32768 to 75, 33024 to 76, 33280 to 77, 33536 to 78, 33792 to 79, 34048 to 80, 34304 to 81, 34560 to 82, 34816 to 83, 35072 to 84, 35328 to 85, 35584 to 86, 35840 to 87, 36096 to 88, 36352 to 89, 36608 to 90, 36864 to 91, 37120 to 92, 37376 to 93, 37632 to 94, 37888 to 95, 38144 to 96, 38400 to 97, 38656 to 98, 38912 to 99, 39168 to 100, 39424 to 101, 39680 to 102, 39936 to 103, 40192 to 104, 40448 to 105, 41216 to 106, 41472 to 107, 41728 to 108, 42240 to 109, 67072 to 110, 73728 to 111, 73984 to 112, 74240 to 113, 77824 to 114, 78080 to 115, 78336 to 116, 78592 to 117, 82944 to 118, 83200 to 119, 92160 to 120, 92416 to 121, 131072 to 122, 131328 to 123, 131584 to 124, 131840 to 125, 132096 to 126, 132352 to 127, 132608 to 128, 132864 to 129, 133120 to 130, 133376 to 131, 133632 to 132, 133888 to 133, 134144 to 134, 134400 to 135, 134656 to 136, 134912 to 137, 135168 to 138, 135424 to 139, 135680 to 140, 135936 to 141, 136192 to 142, 136448 to 143, 136704 to 144, 136960 to 145, 137216 to 146, 137472 to 147, 137728 to 148, 137984 to 149, 138240 to 150, 138496 to 151, 138752 to 152, 139008 to 153, 139264 to 154, 139520 to 155, 139776 to 156, 140032 to 157, 140288 to 158, 140544 to 159, 140800 to 160, 141056 to 161, 141312 to 162, 141568 to 163, 141824 to 164, 142080 to 165, 142336 to 166, 142592 to 167, 142848 to 168, 143104 to 169, 143360 to 170, 143616 to 171, 143872 to 172, 144128 to 173, 144384 to 174, 144640 to 175, 144896 to 176, 145152 to 177, 145408 to 178, 145664 to 179, 145920 to 180, 146176 to 181, 146432 to 182, 146688 to 183, 146944 to 184, 147200 to 185, 147456 to 186, 147712 to 187, 147968 to 188, 148224 to 189, 148480 to 190, 148736 to 191, 148992 to 192, 149248 to 193, 149504 to 194, 149760 to 195, 150016 to 196, 150272 to 197, 150528 to 198, 150784 to 199, 151040 to 200, 151296 to 201, 151552 to 202, 151808 to 203, 152064 to 204, 152320 to 205, 152576 to 206, 152832 to 207, 153088 to 208, 153344 to 209, 153600 to 210, 153856 to 211, 154112 to 212, 154368 to 213, 154624 to 214, 154880 to 215, 155136 to 216, 155392 to 217, 155648 to 218, 155904 to 219, 156160 to 220, 156416 to 221, 156672 to 222, 156928 to 223, 157184 to 224, 157440 to 225, 157696 to 226, 157952 to 227, 158208 to 228, 158464 to 229, 158720 to 230, 158976 to 231, 159232 to 232, 159488 to 233, 159744 to 234, 160000 to 235, 160256 to 236, 160512 to 237, 160768 to 238, 161024 to 239, 161280 to 240, 161536 to 241, 161792 to 242, 162048 to 243, 162304 to 244, 162560 to 245, 162816 to 246, 163072 to 247, 163328 to 248, 163584 to 249, 163840 to 250, 164096 to 251, 164352 to 252, 164608 to 253, 164864 to 254, 165120 to 255
 )
 
-fun encode(input: ByteArray): String {
+internal fun encode(input: ByteArray): String {
     val writer = StringBuilder()
     val length = input.size
     var x = 0
@@ -25,22 +25,26 @@ fun encode(input: ByteArray): String {
     return writer.toString()
 }
 
-fun decode(input: String): ByteArray {
+internal fun decode(input: String): ByteArray {
     val outputStream = ByteArrayOutputStream()
     var done = false
     val codePoints = input.codePoints()
 
     for (codePoint in codePoints) {
         val b1 = codePoint and 0xFF
-        val b2 = B2[codePoint - b1] ?: throw IllegalArgumentException("Invalid base65536 code point: $codePoint")
+        val b2 = B2[codePoint - b1] ?: throw DecodeException("Invalid base65536 code point: $codePoint")
         val bytes = if (b2 == -1) byteArrayOf(b1.toByte()) else byteArrayOf(b1.toByte(), b2.toByte())
         if (bytes.size == 1) {
-            if (done) {
-                throw IllegalArgumentException("base65536 sequence continued after final byte")
-            }
+            if (done)
+                throw DecodeException("base65536 sequence continued after final byte")
             done = true
         }
         outputStream.write(bytes)
     }
     return outputStream.toByteArray()
 }
+
+class DecodeException(
+    message: String,
+    cause: Throwable? = null,
+) : Exception(message, cause)

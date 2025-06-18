@@ -7,10 +7,12 @@ import at.xirado.jdui.view.definition.ViewDefinition
 import at.xirado.jdui.view.definition.function.ViewDefinitionFunction
 import at.xirado.jdui.view.metadata.MessageContext
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.WebhookClient
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.RestAction
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
@@ -90,6 +92,38 @@ suspend fun MessageChannel.sendView(definition: ViewDefinition, context: Context
     return sendMessage(message).populateMessageContext(messageContext)
 }
 
+// Webhooks
+
+suspend fun WebhookClient<Message>.sendView(
+    function: KFunction<ViewDefinitionFunction>,
+    context: Context? = null,
+): RestAction<Message> {
+    val state = createFunctionViewState(jda, function, context)
+    val messageContext = state.messageContext
+
+    val message = state.composeMessage()
+    return sendMessage(message).useComponentsV2().populateMessageContext(this, messageContext)
+}
+
+suspend inline fun <reified T: View> WebhookClient<Message>.sendView(context: Context? = null) = sendView(T::class, context)
+
+suspend fun <T: View> WebhookClient<Message>.sendView(clazz: KClass<T>, context: Context? = null): RestAction<Message> {
+    val state = createClassViewState(jda, clazz, context)
+    val messageContext = state.messageContext
+
+    val message: MessageCreateData = state.composeMessage()
+    return sendMessage(message).useComponentsV2().populateMessageContext(this, messageContext)
+}
+
+suspend fun WebhookClient<Message>.sendView(definition: ViewDefinition, context: Context? = null): RestAction<Message> {
+    val instance = getInstance(jda)
+    val state = createViewState(instance, definition, context = context)
+    val messageContext = state.messageContext
+
+    val message = state.composeMessage()
+    return sendMessage(message).useComponentsV2().populateMessageContext(this, messageContext)
+}
+
 @JvmName("populateMessageContextInteractionHook")
 internal fun RestAction<InteractionHook>.populateMessageContext(context: MessageContext) = onSuccess {
     context.provideInteractionHook(it)
@@ -98,4 +132,14 @@ internal fun RestAction<InteractionHook>.populateMessageContext(context: Message
 @JvmName("populateMessageContextInteractionMessage")
 private fun RestAction<Message>.populateMessageContext(context: MessageContext) = onSuccess {
     context.provideMessageSource(it.channelIdLong, it.idLong)
+}
+
+@JvmName("populateMessageContextWebhookMessage")
+private fun RestAction<Message>.populateMessageContext(webhookClient: WebhookClient<Message>, context: MessageContext) = onSuccess {
+    if (webhookClient is InteractionHook)
+        context.provideInteractionHook(webhookClient)
+    else
+        context.provideWebhookClient(webhookClient, it.idLong)
+
+//     context.provideMessageSource(it.channelIdLong, it.idLong)
 }

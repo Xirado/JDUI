@@ -6,9 +6,9 @@
         </encoder>
     </appender>
 
-    <logger name="net.dv8tion.jda" level="info"/>
+    <logger name="at.xirado.jdui" level="trace"/>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
 

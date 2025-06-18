@@ -14,7 +14,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import net.dv8tion.jda.api.components.button.ButtonStyle.SECONDARY
+import net.dv8tion.jda.api.components.buttons.ButtonStyle.SECONDARY
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem
 import okhttp3.OkHttpClient
 import okhttp3.Request

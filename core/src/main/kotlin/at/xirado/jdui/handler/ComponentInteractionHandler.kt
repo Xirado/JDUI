@@ -1,129 +1,25 @@
 package at.xirado.jdui.handler
 
 import at.xirado.jdui.JDUIListener
-import at.xirado.jdui.component.message.container
-import at.xirado.jdui.component.message.text
-import at.xirado.jdui.crypto.decryptChaCha
-import at.xirado.jdui.state.ViewState
-import at.xirado.jdui.state.createViewState
-import at.xirado.jdui.utils.decode
-import at.xirado.jdui.utils.mergeCustomIds
-import at.xirado.jdui.view.definition.function.view
-import at.xirado.jdui.view.metadata.EncryptedViewStateMetadata
-import at.xirado.jdui.view.populateMessageContext
-import at.xirado.jdui.view.replyView
-import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.protobuf.ProtoBuf
+import at.xirado.jdui.state.interaction.ViewComponentInteraction
+import kotlinx.coroutines.launch
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.utils.messages.MessageCreateData
-import net.dv8tion.jda.api.utils.messages.MessageEditData
 
-private val log = KotlinLogging.logger { }
+private val componentsV2Flag = Message.MessageFlag.IS_COMPONENTS_V2.value.toLong()
 
 internal class ComponentInteractionHandler(private val jdui: JDUIListener) {
-    private val config = jdui.config
+    private val coroutineScope = jdui.coroutineScope
 
-    suspend fun handleComponentEvent(event: GenericComponentInteractionCreateEvent) {
-        val id = event.message.components.mergeCustomIds()
+    fun handleComponentEvent(event: GenericComponentInteractionCreateEvent) {
+        if ((event.message.flagsRaw and componentsV2Flag) == 0L)
+            return
 
-        when {
-            id.startsWith("j1:") -> handleStatefulView(id, event)
-            id.startsWith("j2:") -> handleStatelessView(id, event)
-            else -> return
-        }
-    }
+        val now = System.currentTimeMillis()
 
-    @OptIn(ExperimentalSerializationApi::class)
-    private suspend fun handleStatefulView(componentId: String, event: GenericComponentInteractionCreateEvent) {
-        val data = componentId.substringAfter("j1:")
-
-        val decodedData = decode(data)
-
-        val metadataEncrypted: EncryptedViewStateMetadata = ProtoBuf.decodeFromByteArray(decodedData)
-
-        val secret = config.secret
-        val metadata = metadataEncrypted.decrypt(secret)
-        val id = metadata.id
-
-        log.debug { "Handling component interaction for view $id" }
-        val cachedState = jdui.messageCache.getIfPresent(id)
-
-        if (cachedState != null) {
-            val message = updateMessage(event, cachedState)
-            return event.editMessage(MessageEditData.fromCreateData(message))
-                .populateMessageContext(cachedState.messageContext)
-                .queue()
-        }
-
-        if (metadata.metadata.sourceData == null) {
-            return event.replyView(view {
-                compose {
-                    +container(accentColor = 0xFF0000) {
-                        +text("This action timed out!")
-                    }
-                }
-            }, ephemeral = true).queue()
-        }
-
-        val state = createViewState(jdui, metadata)
-
-        val message = updateMessage(event, state)
-        event.editMessage(MessageEditData.fromCreateData(message))
-            .populateMessageContext(state.messageContext)
-            .queue()
-    }
-
-    @OptIn(ExperimentalSerializationApi::class)
-    private suspend fun handleStatelessView(componentId: String, event: GenericComponentInteractionCreateEvent) {
-        val id = componentId.substringAfter("j2:").toLong()
-        val cachedState = jdui.messageCache.getIfPresent(id)
-
-        log.debug { "Handling component interaction for view $id" }
-        if (cachedState != null) {
-            val message = updateMessage(event, cachedState)
-            return event.editMessage(MessageEditData.fromCreateData(message))
-                .populateMessageContext(cachedState.messageContext)
-                .queue()
-        }
-
-        log.debug { "Getting state from db: $id" }
-
-        val persistence = jdui.config.persistenceConfig
-            ?: throw IllegalStateException("No PersistenceConfig was provided!")
-
-        val retrievedState = persistence.retrieveState(id)
-            ?: throw IllegalStateException("No such view with id $id")
-
-        val secret = config.secret
-        val encryptedMetadata: EncryptedViewStateMetadata = ProtoBuf.decodeFromByteArray(retrievedState.data)
-
-        val metadata = encryptedMetadata.decrypt(secret)
-
-        if (metadata.metadata.sourceData == null) {
-            return event.replyView(view {
-                compose {
-                    +container(accentColor = 0xFF0000) {
-                        +text("This action timed out!")
-                    }
-                }
-            }, ephemeral = true).queue()
-        }
-
-        val state = createViewState(jdui, metadata)
-        val message = updateMessage(event, state)
-
-        event.editMessage(MessageEditData.fromCreateData(message))
-            .populateMessageContext(state.messageContext)
-            .queue()
-    }
-
-    private suspend fun updateMessage(event: GenericComponentInteractionCreateEvent, state: ViewState): MessageCreateData {
-        return state.mutex.withLock {
-            state.handleComponentInteraction(event)
-            state.composeMessage()
+        coroutineScope.launch {
+            val interaction = ViewComponentInteraction.fromEvent(jdui, event, now)
+            interaction?.process()
         }
     }
 }

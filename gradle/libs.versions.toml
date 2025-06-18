@@ -5,7 +5,7 @@ publishing = "0.31.0"
 kotlin-coroutines = "1.10.1"
 kotlin-protobuf = "1.8.1"
 
-jda = "54038f1cec"
+jda = "4a9d724a21"
 slf4j-api = "2.0.13"
 kotlin-logging = "5.1.0"
 snowflake-id = "0.0.2"

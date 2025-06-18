@@ -38,13 +38,10 @@ class JDUIListener(internal val config: JDUIConfig) : EventListener {
 //    private val modalInteractionHandler = ModalInteractionHandler(this)
 
     override fun onEvent(event: GenericEvent) {
-        coroutineScope.launch {
-            when (event) {
-                is StatusChangeEvent -> handleStatusChange(event)
-                is ShutdownEvent -> handleShutdown(event)
-                is GenericComponentInteractionCreateEvent -> componentInteractionHandler.handleComponentEvent(event)
-//                is ModalInteractionEvent -> modalInteractionHandler.onModalEvent(event)
-            }
+        when (event) {
+            is StatusChangeEvent -> handleStatusChange(event)
+            is ShutdownEvent -> handleShutdown(event)
+            is GenericComponentInteractionCreateEvent -> componentInteractionHandler.handleComponentEvent(event)
         }
     }
 
