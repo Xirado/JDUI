@@ -9,10 +9,10 @@ import at.xirado.jdui.view.definition.function.view
 import net.dv8tion.jda.api.components.buttons.ButtonStyle.*
 
 fun stateTest() = view {
-    var someInt by state(0)
-    var someString by state("")
-    var someNullableInt: Int? by state(null)
-    var someNullableString: String? by state(null)
+    var someInt by state { 0 }
+    var someString by state { "" }
+    var someNullableInt: Int? by state { null }
+    var someNullableString: String? by state { null }
 
     compose {
         +container(0x00ff00) {

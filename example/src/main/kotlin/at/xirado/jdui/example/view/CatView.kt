@@ -26,7 +26,7 @@ private const val CAT_URL = "https://api.thecatapi.com/v1/images/search?limit=10
 
 class CatView : View() {
     private val httpClient: OkHttpClient by context
-    private val cats: MutableList<Cat> by state(mutableListOf())
+    private val cats: MutableList<Cat> by state { mutableListOf() }
 
     private var currentCatJob: Deferred<Unit>? = null
 

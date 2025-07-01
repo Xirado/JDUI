@@ -20,8 +20,8 @@ private val emojis = mapOf(
 )
 
 fun componentTest() = view {
-    var description: String? by state(null)
-    var emojiString: String by state("")
+    var description: String? by state { null }
+    var emojiString: String by state { "" }
 
     val file = {
         val bytes = "Hello World".byteInputStream()
