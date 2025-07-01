@@ -5,7 +5,7 @@ import at.xirado.jdui.view.definition.ViewDefinition
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.reflect.KProperty
 
-fun <T> ViewDefinition.state(default: T): PropertyDelegateProvider<Any?, UserStateProperty<T>> {
+fun <T> ViewDefinition.state(default: () -> T): PropertyDelegateProvider<Any?, UserStateProperty<T>> {
     val viewState = this.state
     val userState = this.userState
 
@@ -20,6 +20,6 @@ fun <T> ViewDefinition.state(default: T): PropertyDelegateProvider<Any?, UserSta
     }
 }
 
-fun <T> View.state(default: T): PropertyDelegateProvider<Any?, UserStateProperty<T>> {
+fun <T> View.state(default: () -> T): PropertyDelegateProvider<Any?, UserStateProperty<T>> {
     return withDefinition { it.state(default) }
 }

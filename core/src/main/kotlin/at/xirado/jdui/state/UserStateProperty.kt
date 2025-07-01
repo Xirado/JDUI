@@ -7,7 +7,7 @@ import kotlin.reflect.KProperty
 class UserStateProperty<T> internal constructor(
     internal val index: Int,
     internal val property: KProperty<T>,
-    internal val default: T,
+    internal val default: () -> T,
     internal val state: ViewState,
 ): ReadWriteProperty<Any?, T> {
     internal val serializer = serializer(property.returnType)
