@@ -22,9 +22,9 @@ import java.time.Instant
 
 class UrbanDictionaryView : View() {
     private val httpClient: OkHttpClient by context
-    private val query: UrbanDictionaryQuery? by state(context.get())
-    private var pageIndex: Int by state(0)
-    private var definitions: List<UrbanDefinition> by state(emptyList())
+    private val query: UrbanDictionaryQuery? by state { context.get() }
+    private var pageIndex: Int by state { 0 }
+    private var definitions: List<UrbanDefinition> by state { emptyList() }
 
     init {
         require(query != null) { "UrbanDictionaryQuery not present in context!" }
