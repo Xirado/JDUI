@@ -12,6 +12,7 @@ import at.xirado.jdui.view.metadata.source.ClassViewSourceData
 import at.xirado.jdui.view.metadata.source.FunctionViewSourceData
 import at.xirado.jdui.view.metadata.source.ViewSourceCache
 import at.xirado.jdui.view.metadata.source.ViewSourceData
+import at.xirado.jdui.view.middleware.ViewMiddleware
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
@@ -37,6 +38,7 @@ class ViewState internal constructor(
     internal var mutex = Mutex()
     internal val context = Context(listener.context)
     internal val messageContext = MessageContext(this)
+    internal val middleware: MutableList<ViewMiddleware> = mutableListOf()
 
     private var userState = metadata.metadata.sourceData?.let {
         if (supportUserState) UserStateCollection(metadata.metadata.userState) else null

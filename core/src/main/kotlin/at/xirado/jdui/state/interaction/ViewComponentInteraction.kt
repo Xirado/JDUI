@@ -41,6 +41,13 @@ class ViewComponentInteraction<E: GenericComponentInteractionCreateEvent> privat
         if (isInitialized)
             throw IllegalStateException("Can only call process() once!")
 
+        val middlewares = state.middleware
+
+        for (middleware in middlewares) {
+            if (!middleware.processEvent(event))
+                return@withLock
+        }
+
         val component = initialize()
 
         state.messageContext.provideInteractionHook(event.hook)
