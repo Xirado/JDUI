@@ -4,10 +4,10 @@ import at.xirado.jdui.component.message.*
 import at.xirado.jdui.component.row
 import at.xirado.jdui.state.state
 import at.xirado.jdui.view.definition.function.view
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem
-import net.dv8tion.jda.api.components.selects.EntitySelectMenu
-import net.dv8tion.jda.api.components.selects.SelectOption
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu
+import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.utils.FileUpload
 
@@ -20,8 +20,8 @@ private val emojis = mapOf(
 )
 
 fun componentTest() = view {
-    var description: String? by state(null)
-    var emojiString: String by state("")
+    var description: String? by state { null }
+    var emojiString: String by state { "" }
 
     val file = {
         val bytes = "Hello World".byteInputStream()
@@ -68,7 +68,7 @@ fun componentTest() = view {
             +row {
                 val options = emojis.map { SelectOption.of(it.key, it.value).withEmoji(Emoji.fromUnicode(it.value)) }
                 +stringSelect(options, placeholder = "Select an emoji") {
-                    selectedOptions.forEach { emojiString += it.value }
+                    event.selectedOptions.forEach { emojiString += it.value }
                 }
             }
             +row {

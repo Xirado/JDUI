@@ -14,7 +14,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import net.dv8tion.jda.api.components.button.ButtonStyle.SECONDARY
+import net.dv8tion.jda.api.components.buttons.ButtonStyle.SECONDARY
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -26,7 +26,7 @@ private const val CAT_URL = "https://api.thecatapi.com/v1/images/search?limit=10
 
 class CatView : View() {
     private val httpClient: OkHttpClient by context
-    private val cats: MutableList<Cat> by state(mutableListOf())
+    private val cats: MutableList<Cat> by state { mutableListOf() }
 
     private var currentCatJob: Deferred<Unit>? = null
 

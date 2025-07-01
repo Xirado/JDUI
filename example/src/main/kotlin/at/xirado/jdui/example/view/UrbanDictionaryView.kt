@@ -9,7 +9,7 @@ import dev.minn.jda.ktx.util.await
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import net.dv8tion.jda.api.components.button.ButtonStyle
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.separator.Separator
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.utils.TimeFormat
@@ -22,9 +22,9 @@ import java.time.Instant
 
 class UrbanDictionaryView : View() {
     private val httpClient: OkHttpClient by context
-    private val query: UrbanDictionaryQuery? by state(context.get())
-    private var pageIndex: Int by state(0)
-    private var definitions: List<UrbanDefinition> by state(emptyList())
+    private val query: UrbanDictionaryQuery? by state { context.get() }
+    private var pageIndex: Int by state { 0 }
+    private var definitions: List<UrbanDefinition> by state { emptyList() }
 
     init {
         require(query != null) { "UrbanDictionaryQuery not present in context!" }
