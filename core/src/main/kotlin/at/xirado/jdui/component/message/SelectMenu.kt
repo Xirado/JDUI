@@ -1,14 +1,14 @@
 package at.xirado.jdui.component.message
 
 import at.xirado.jdui.component.StatefulActionComponent
-import net.dv8tion.jda.api.components.selects.SelectOption
+import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import kotlin.reflect.typeOf
-import net.dv8tion.jda.api.components.selects.EntitySelectMenu as JDAEntitySelectMenu
-import net.dv8tion.jda.api.components.selects.StringSelectMenu as JDAStringSelectMenu
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu as JDAEntitySelectMenu
+import net.dv8tion.jda.api.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 private typealias StringCallback = suspend StringSelectInteractionEvent.() -> Unit
 private typealias EntityCallback = suspend EntitySelectInteractionEvent.() -> Unit
