@@ -15,9 +15,9 @@ data class LastUpdate(
 )
 
 fun counterView() = view {
-    var counter: Int by state(0)
-    var step: Int by state(1)
-    var lastUpdate: LastUpdate? by state(null)
+    var counter: Int by state { 0 }
+    var step: Int by state { 1 }
+    var lastUpdate: LastUpdate? by state { null }
 
     compose {
         +text(

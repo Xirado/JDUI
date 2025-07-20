@@ -15,9 +15,9 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.utils.TimeFormat
 
 class MultipleMenusView : View() {
-    private var isConfirmationView by state(false)
-    private var isLoading by state(false)
-    private var data: String? by state(null)
+    private var isConfirmationView by state { false }
+    private var isLoading by state { false }
+    private var data: String? by state { null }
 
     override suspend fun createView() = compose {
         +container(0x4287f5) {

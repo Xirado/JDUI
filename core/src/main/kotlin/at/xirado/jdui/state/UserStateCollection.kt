@@ -21,7 +21,7 @@ internal class UserStateCollection(
             return
 
         if (index > unpackedUserState.lastIndex) {
-            userState[property] = property.default
+            userState[property] = property.default()
             return
         }
 
