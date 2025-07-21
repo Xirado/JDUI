@@ -31,13 +31,16 @@ fun Project.configurePublishing() {
         }
 
         configure<MavenPublishBaseExtension> {
+            val projectName = "jdui-${project.name}"
+
             publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = false)
             signAllPublications()
-            coordinates("dev.xirado", "jdui-${project.name}", project.version as String)
+            coordinates("dev.xirado", projectName, project.version as String)
 
             pom {
                 description = "Kotlin library for effortlessly creating stateful and interactive messages in Discord with 0 boilerplate"
                 url = "https://github.com/Xirado/JDUI"
+                name = projectName
 
                 licenses {
                     license {
