@@ -55,7 +55,7 @@ dependencies {
 <dependency>
     <groupId>dev.xirado</groupId>
     <artifactId>jdui-core</artifactId>
-    <version>0.1.1</version>
+    <version>0.2.0</version>
 </dependency>
 <dependency>
     <groupId>net.dv8tion</groupId>
