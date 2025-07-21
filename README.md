@@ -5,7 +5,7 @@
 [![jitpack][]](https://jitpack.io/#dev.xirado/jdui-core)
 
 # JDUI
-A Kotlin library for effortlessly creating stateful and interactive messages in Discord with 0 boilerplate
+A Kotlin library for effortlessly creating stateful and interactive messages in Discord using JDA with 0 boilerplate
 
 ```kt
 fun counterView() = view {
@@ -24,7 +24,7 @@ fun counterView() = view {
 ```
 
 > [!WARNING]  
-> This library is a work in progress. API breakage may (and probably will) happen!
+> This library is a work in progress. Features are missing and API breakage is likely!
 
 ## Features
 * Easily create isolated message "views" (as we will call them from now on) and make them interactive with 0 boilerplate
@@ -44,7 +44,8 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.xirado:jdui-core:0.1.1")
+    implementation("dev.xirado:jdui-core:0.2.0")
+    implementation("net.dv8tion:JDA:6.0.0-rc.1")
 }
 ```
 
@@ -55,5 +56,10 @@ dependencies {
     <groupId>dev.xirado</groupId>
     <artifactId>jdui-core</artifactId>
     <version>0.1.1</version>
+</dependency>
+<dependency>
+    <groupId>net.dv8tion</groupId>
+    <artifactId>JDA</artifactId>
+    <version>6.0.0-rc.1</version>
 </dependency>
 ```
