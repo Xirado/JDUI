@@ -44,7 +44,7 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.xirado:jdui-core:0.2.0")
+    implementation("dev.xirado:jdui-core:0.2.1")
     implementation("net.dv8tion:JDA:6.0.0-rc.1")
 }
 ```
@@ -55,7 +55,7 @@ dependencies {
 <dependency>
     <groupId>dev.xirado</groupId>
     <artifactId>jdui-core</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
 </dependency>
 <dependency>
     <groupId>net.dv8tion</groupId>
